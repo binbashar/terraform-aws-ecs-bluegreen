@@ -15,7 +15,7 @@ module "security_group" {
   ingress_rules = var.security_settings.security_group_rules
   egress_rules  = ["all-all"]
 
-  tags = local.tags
+  tags = var.tags
 }
 
 module "services" {

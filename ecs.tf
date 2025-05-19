@@ -23,5 +23,5 @@ module "ecs_cluster" {
 
   #depends_on = [data.aws_nat_gateways.natgtw]
 
-  tags = local.tags
+  tags = var.tags
 }
