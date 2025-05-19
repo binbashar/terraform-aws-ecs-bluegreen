@@ -60,7 +60,13 @@ variable "turn_off_services" {
 }
 
 variable "turn_off_on_services_schedule" {
-  type        = any
+  type = object({
+    schedule_off_expression = string
+    schedule_on_expression  = string
+  })
   description = "Turn off and on services ecs cluster schedule"
-  default     = {}
+  default = {
+    schedule_off_expression = "cron(0 23 ? * MON,TUE,WED,THUR,FRI *)"
+    schedule_on_expression  = "cron(0 0 ? * MON,TUE,WED,THUR,FRI *)"
+  }
 }
