@@ -39,7 +39,10 @@ variable "git_service" {
     type            = string
   })
   description = "Git Service Configuration for CodePipeline"
-  default     = {}
+  default     = {
+    connection_name = "github"
+    type            = "github"
+  }
 }
 
 variable "tags" {
