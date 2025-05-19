@@ -4,9 +4,12 @@ variable "cluster_name" {
 }
 
 variable "alb_settings" {
-  type        = any
+  type        = object({
+    listener_arn = optional(string, null)
+    target_group_arns = optional(list(string), [])
+    health_check_path = optional(string, "/")
+  })
   description = "ALB Settings"
-  default     = {}
 }
 
 variable "services" {

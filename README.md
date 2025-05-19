@@ -13,8 +13,10 @@ This Terraform module provides a complete solution for deploying and managing EC
 - CodeDeploy Integration
 - S3 Bucket for CodePipeline
 - SNS Notifications
+- Service Scheduling (Auto Start/Stop)
+- Git Service Integration for CodePipeline
 
-## Usage
+## Quick Start
 
 ```hcl
 module "ecs_infra" {
@@ -29,14 +31,13 @@ module "ecs_infra" {
   networking_settings           = var.networking_settings
   security_settings             = var.security_settings
   deployment_settings           = var.deployment_settings
-  git_service                   = var.git_service
   turn_off_services             = var.turn_off_services
   turn_off_on_services_schedule = var.turn_off_on_services_schedule
   tags                          = var.tags
 }
 ```
 
-## Example Configuration
+## Detailed Configuration
 
 ### ALB Settings
 
@@ -175,13 +176,42 @@ deployment_settings = {
 }
 ```
 
+### Service Scheduling
+
+```hcl
+# Enable service scheduling
+turn_off_services = true
+
+# Configure schedule for service start/stop
+turn_off_on_services_schedule = {
+  schedule_off_expression = "cron(0 23 ? * MON,TUE,WED,THUR,FRI *)"  # Turn off at 11 PM on weekdays
+  schedule_on_expression  = "cron(0 0 ? * MON,TUE,WED,THUR,FRI *)"   # Turn on at 12 AM on weekdays
+}
+```
+
+### Git Service Integration
+
+```hcl
+git_service = {
+  connection_name = "github"
+  type           = "github"
+}
+```
+
 ## Requirements
 
-- Terraform >= 0.13
-- AWS Provider >= 3.0
+| Name | Version |
+|------|---------|
+| terraform | >= 0.13 |
+| aws | >= 3.0 |
+
+## Prerequisites
+
+- AWS Account and credentials configured
 - ECS Cluster
 - VPC with public and private subnets
 - ECR Repository for container images
+- Git repository for source code
 
 ## Inputs
 
@@ -190,27 +220,37 @@ deployment_settings = {
 | region | AWS region | `string` | n/a | yes |
 | cluster_name | Name of the ECS cluster | `string` | n/a | yes |
 | task_definition_template_path | Path to the task definition template | `string` | n/a | yes |
-| alb_settings | ALB configuration settings | `map` | n/a | yes |
-| services | ECS services configuration | `map` | n/a | yes |
-| deployment_settings | Deployment configuration settings | `map` | n/a | yes |
+| alb_settings | ALB configuration settings | `map` | `{}` | no |
+| services | ECS services configuration | `map` | `{}` | no |
+| networking_settings | Networking configuration settings | `map` | `{}` | no |
+| security_settings | Security configuration settings | `map` | `{}` | no |
+| deployment_settings | Deployment configuration settings | `map` | `{}` | no |
+| git_service | Git service configuration for CodePipeline | `object` | `{connection_name = "github", type = "github"}` | no |
+| turn_off_services | Enable/disable service scheduling | `bool` | `false` | no |
+| turn_off_on_services_schedule | Schedule configuration for service start/stop | `object` | See example | no |
+| tags | Tags for the resources | `map(string)` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | cluster_name | Name of the ECS cluster |
-| cluster_arn | ARN of the ECS cluster |
-| alb_dns_name | DNS name of the ALB |
-| service_names | Names of the ECS services |
+| services | Details of the ECS services |
+| security_groups | Security groups associated with the services |
+| turn_off_on_services_schedule | Schedule configuration for service start/stop |
 
-## License
+## Examples
 
-MIT
+Check the `examples/basic` directory for a complete working example of how to use this module.
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

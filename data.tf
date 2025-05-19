@@ -5,8 +5,3 @@ data "aws_caller_identity" "current" {}
 data "aws_vpc" "vpc" {
   id = var.networking_settings.vpc_id
 }
-
-# Get ECS Cluster
-data "aws_ecs_cluster" "cluster" {
-  cluster_name = var.cluster_name
-}
