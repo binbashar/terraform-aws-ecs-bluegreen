@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.3](https://github.com/binbashar/terraform-aws-ecs-bluegreen/compare/v1.1.2...v1.1.3) (2025-06-03)
+
+
+### Bug Fixes
+
+* Update target group ARN reference in ECS services module to use ALB module output ([8a659c0](https://github.com/binbashar/terraform-aws-ecs-bluegreen/commit/8a659c08fd2cfd20e083ba490c865c8d723c413a))
+
 ## [1.1.2](https://github.com/binbashar/terraform-aws-ecs-bluegreen/compare/v1.1.1...v1.1.2) (2025-06-03)
 
 
