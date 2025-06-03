@@ -68,7 +68,7 @@ module "alb_ecs" {
   tags                       = var.alb_settings.tags
   # Networking settings
   vpc_id                       = var.networking_settings.vpc_id
-  subnets                      = var.networking_settings.private_subnets
+  subnets                      = var.networking_settings.alb_subnets
   security_group_ingress_rules = var.alb_settings.security_group_ingress_rules
   security_group_egress_rules  = var.alb_settings.security_group_egress_rules
 }

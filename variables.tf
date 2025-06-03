@@ -1,6 +1,39 @@
-variable "cluster_name" {
-  type        = string
-  description = "ECS Cluster Name"
+variable "ecs_cluster_settings" {
+  type = object({
+    name = string
+    fargate_capacity_providers = object({
+      FARGATE = object({
+        default_capacity_provider_strategy = object({
+          weight = number
+          base   = number
+        })
+      })
+      FARGATE_SPOT = object({
+        default_capacity_provider_strategy = object({
+          weight = number
+          base   = number
+        })
+      })
+    })
+  })
+  description = "ECS Cluster Settings"
+  default = {
+    name = "ecs-cluster"
+    fargate_capacity_providers = {
+      FARGATE = {
+        default_capacity_provider_strategy = {
+          weight = 60
+          base   = 1
+        }
+      }
+      FARGATE_SPOT = {
+        default_capacity_provider_strategy = {
+          weight = 40
+          base   = 0
+        }
+      }
+    }
+  }
 }
 
 variable "alb_settings" {
@@ -21,9 +54,12 @@ variable "region" {
 }
 
 variable "networking_settings" {
-  type        = any
-  description = "Networking Settings"
-  default     = {}
+  type = object({
+    vpc_id          = string
+    service_subnets = list(string)
+    alb_subnets     = list(string)
+  })
+  description = "Network configuration settings including VPC ID and subnet lists for services and ALB"
 }
 
 variable "security_settings" {
@@ -44,7 +80,7 @@ variable "git_service" {
     type            = string
   })
   description = "Git Service Configuration for CodePipeline"
-  default     = {
+  default = {
     connection_name = "github"
     type            = "github"
   }
