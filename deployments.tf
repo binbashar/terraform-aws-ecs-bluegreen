@@ -246,7 +246,7 @@ data "aws_iam_policy_document" "codepipeline_policy" {
       "ecs:UpdateService",
       "ecs:DescribeServices"
     ]
-    resources = [module.ecs_service.service_arn]
+    resources = [module.ecs_services[each.key].service_arn]
   }
   statement {
     sid = "codestar"
