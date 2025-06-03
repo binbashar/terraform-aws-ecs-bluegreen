@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1](https://github.com/binbashar/terraform-aws-ecs-bluegreen/compare/v1.1.0...v1.1.1) (2025-06-03)
+
+
+### Bug Fixes
+
+* Update resource reference in IAM policy and remove unused security groups output ([78a2139](https://github.com/binbashar/terraform-aws-ecs-bluegreen/commit/78a21392d7783aefe6d06b5e042d8c5b06d23493))
+
 ## [1.1.0](https://github.com/binbashar/terraform-aws-ecs-bluegreen/compare/v1.0.0...v1.1.0) (2025-06-03)
 
 
