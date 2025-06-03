@@ -368,7 +368,7 @@ resource "aws_cloudwatch_event_target" "codepipeline_trigger" {
   for_each  = var.services
   rule      = aws_cloudwatch_event_rule.ecr_image_push[each.key].name
   target_id = "codepipeline-trigger-${each.key}"
-  arn       = aws_codepipeline.backend_ecs_apps[each.key].arn
+  arn       = aws_codepipeline.ecs_apps[each.key].arn
   role_arn  = aws_iam_role.ecr_image[each.key].arn
 
   input_transformer {
