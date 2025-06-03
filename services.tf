@@ -40,7 +40,7 @@ module "ecs_services" {
   subnet_ids            = var.networking_settings.service_subnets
   load_balancer = {
     service = {
-      target_group_arn = var.alb_settings.target_group_blue_arn
+      target_group_arn = module.alb_ecs.target_groups["${each.key}_blue"].arn
       container_name   = each.key
       container_port   = each.value.application_port
     }
