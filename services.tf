@@ -18,7 +18,7 @@ module "security_group" {
   tags = var.tags
 }
 
-module "services" {
+module "ecs_services" {
   for_each    = var.services
   source      = "github.com/binbashar/terraform-aws-ecs.git//modules/service?ref=v5.12.0"
   name        = each.key
