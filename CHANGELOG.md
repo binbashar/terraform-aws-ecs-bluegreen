@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0](https://github.com/binbashar/terraform-aws-ecs-bluegreen/compare/v1.0.0...v1.1.0) (2025-06-03)
+
+
+### Features
+
+* Test PR title ([c60ced7](https://github.com/binbashar/terraform-aws-ecs-bluegreen/commit/c60ced7bc80e0b7432869b83690ad548fe5f794d))
+
+
+### Bug Fixes
+
+* Correct ARN reference in CloudWatch event target and rename services module to ecs_services ([0d98894](https://github.com/binbashar/terraform-aws-ecs-bluegreen/commit/0d988945a31c0f26cd5aa86e75dfde636c2befc3))
+
 ## 1.0.0 (2025-05-21)
 
 
