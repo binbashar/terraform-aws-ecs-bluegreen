@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2](https://github.com/binbashar/terraform-aws-ecs-bluegreen/compare/v1.1.1...v1.1.2) (2025-06-03)
+
+
+### Bug Fixes
+
+* Update ALB and ECS configurations for improved networking and security settings ([aa25e07](https://github.com/binbashar/terraform-aws-ecs-bluegreen/commit/aa25e072915439590a0fbb9ad25693383e249c7a))
+
 ## [1.1.1](https://github.com/binbashar/terraform-aws-ecs-bluegreen/compare/v1.1.0...v1.1.1) (2025-06-03)
 
 
