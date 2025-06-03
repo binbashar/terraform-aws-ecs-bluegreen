@@ -6,8 +6,6 @@ alb_settings = {
   load_balancer_type         = "application" # Type of load balancer (application for HTTP/HTTPS)
   internal                   = true          # Whether the ALB is internal (not internet-facing)
   enable_deletion_protection = true          # Prevents accidental deletion of the ALB
-  vpc_id                     = "vpc-0577524a0e38786ea"  # VPC where the ALB will be deployed
-  subnets                    = ["subnet-0577524a0e38786ea", "subnet-0577524a0e38786ea", "subnet-0577524a0e38786ea"]  # Subnets for ALB placement
 
   # Ingress Rules Configuration
   # Defines which traffic is allowed to reach the ALB

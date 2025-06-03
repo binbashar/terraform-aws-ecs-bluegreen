@@ -2,12 +2,12 @@ module "ecs_infra" {
   source = "../../"
 
   region                        = "us-east-1"
-  cluster_name                  = "ecs-cluster"
+  ecs_cluster_settings          = var.ecs_cluster_settings
   task_definition_template_path = "./task-definition.json"
 
   alb_settings                  = var.alb_settings
   services                      = var.services
-  networking_settings           = var.networking_settings
+  networking_settings           = local.networking_settings
   security_settings             = var.security_settings
   deployment_settings           = var.deployment_settings
   turn_off_services             = var.turn_off_services

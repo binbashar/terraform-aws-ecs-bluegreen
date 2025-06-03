@@ -57,11 +57,24 @@ alb_settings = {
       protocol  = "tcp"
       cidr_ipv4 = "0.0.0.0/0"
     }
+    http_8080 = {
+      from_port = 8080
+      to_port   = 8080
+      protocol  = "tcp"
+      cidr_ipv4 = "0.0.0.0/0"
+    }
     https = {
       from_port = 443
       to_port   = 443
       protocol  = "tcp"
       cidr_ipv4 = "0.0.0.0/0"
+    }
+  }
+
+  security_group_egress_rules = {
+    all = {
+      ip_protocol = "-1"
+      cidr_ipv4   = "0.0.0.0/0"
     }
   }
   
@@ -98,41 +111,52 @@ services = {
       max_capacity = 1
     }
 
-    application_port     = 8080
+    application_port     = 80
     application_protocol = "HTTP"
     application_health_check = {
-      path                = "/health"
+      path                = "/"
       interval            = 30
       timeout             = 20
       healthy_threshold   = 2
       unhealthy_threshold = 4
-      port                = 8080
+      port                = 80
       protocol            = "HTTP"
     }
 
     container_definitions = {
       my-service = {
-        cpu                      = 512
-        memory                   = 1024
-        image                    = "123456789.dkr.ecr.region.amazonaws.com/my-service:latest"
+        cpu                      = 256
+        memory                   = 512
+        image                    = "nginx:latest"
         readonly_root_filesystem = false
         port_mappings = [
           {
             name          = "my-service"
-            containerPort = 8080
-            hostPort      = 8080
+            containerPort = 80
+            hostPort      = 80
             protocol      = "tcp"
           }
         ]
         environment = [
           {
-            name  = "ENVIRONMENT"
-            value = "production"
+            name  = "FAKE_ENV_VAR"
+            value = "fake-value"
           }
         ]
         cloudwatch_log_group_retention_in_days = 3
       }
     }
+
+    task_exec_iam_statements = [
+      {
+        effect = "Allow"
+        actions = [
+          "kms:Decrypt",
+          "kms:GenerateDataKey"
+        ]
+        resources = ["*"]
+      }
+    ]
   }
 }
 ```
@@ -141,6 +165,12 @@ services = {
 
 ```hcl
 deployment_settings = {
+  task_definition_template_path = "./task-definition.json"
+
+  source_action = {
+    name = "GitHub"
+  }
+
   traffic_routing_config = {
     type       = "AllAtOnce"
     interval   = 1
@@ -150,6 +180,11 @@ deployment_settings = {
   deployment_style = {
     deployment_option = "WITH_TRAFFIC_CONTROL"
     deployment_type   = "BLUE_GREEN"
+  }
+
+  minimum_healthy_hosts = {
+    type  = "HOST_COUNT"
+    value = 1
   }
 
   blue_green_deployment_config = {
@@ -162,9 +197,12 @@ deployment_settings = {
     }
   }
 
+  prod_traffic_route_listener_name = "http"
+
   bucket = {
-    name                    = "my-codepipeline-bucket"
+    name                    = "flokzu-codepipeline"
     force_destroy           = false
+    attach_policy           = false
     block_public_acls       = true
     block_public_policy     = true
     restrict_public_buckets = true
@@ -172,7 +210,31 @@ deployment_settings = {
       status     = true
       mfa_delete = false
     }
+    kms_master_key_id = "alias/aws/s3"
+    sse_algorithm     = "AES256"
   }
+
+  notification = {
+    name                        = "deployment-notifications"
+    create_topic_policy         = true
+    enable_default_topic_policy = true
+  }
+}
+```
+
+### Security Settings
+
+```hcl
+security_settings = {
+  vpc_id              = "vpc-xxxxx"
+  security_group_name = "backend"
+  description         = "Security Group for Backend Services"
+  security_group_rules = [
+    "http-80-tcp",
+    "http-8080-tcp",
+    "https-443-tcp",
+    "https-8443-tcp"
+  ]
 }
 ```
 
@@ -180,7 +242,7 @@ deployment_settings = {
 
 ```hcl
 # Enable service scheduling
-turn_off_services = true
+turn_off_services = false
 
 # Configure schedule for service start/stop
 turn_off_on_services_schedule = {
@@ -198,12 +260,34 @@ git_service = {
 }
 ```
 
+### ECS Cluster Settings
+
+```hcl
+ecs_cluster_settings = {
+  name = "ecs-cluster"
+  fargate_capacity_providers = {
+    FARGATE = {
+      default_capacity_provider_strategy = {
+        weight = 60
+        base   = 1
+      }
+    }
+    FARGATE_SPOT = {
+      default_capacity_provider_strategy = {
+        weight = 40
+        base   = 0
+      }
+    }
+  }
+}
+```
+
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.13 |
-| aws | >= 3.0 |
+| terraform | >= 1.3 |
+| aws | >= 5.0 |
 
 ## Prerequisites
 
@@ -213,12 +297,23 @@ git_service = {
 - ECR Repository for container images
 - Git repository for source code
 
+## Module Dependencies
+
+| Name | Version |
+|------|---------|
+| terraform-aws-ecs | v5.12.0 |
+| terraform-aws-alb | v9.9.0 |
+| terraform-aws-security-group | v5.3.0 |
+| terraform-aws-s3-bucket | v4.2.2 |
+| terraform-aws-code-deploy | 0.2.3 |
+| terraform-aws-modules/sns/aws | v6.1.2 |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | region | AWS region | `string` | n/a | yes |
-| cluster_name | Name of the ECS cluster | `string` | n/a | yes |
+| ecs_cluster_settings | ECS cluster configuration | `object` | See example | no |
 | task_definition_template_path | Path to the task definition template | `string` | n/a | yes |
 | alb_settings | ALB configuration settings | `map` | `{}` | no |
 | services | ECS services configuration | `map` | `{}` | no |
@@ -242,6 +337,50 @@ git_service = {
 ## Examples
 
 Check the `examples/basic` directory for a complete working example of how to use this module.
+
+## Security Considerations
+
+1. **Network Security**
+   - The module configures security groups with least privilege access
+   - Supports both internal and external ALB configurations
+   - Allows customization of ingress/egress rules
+
+2. **IAM Security**
+   - Implements least privilege IAM roles and policies
+   - Supports KMS encryption for sensitive data
+   - Configurable task execution IAM roles
+
+3. **Data Security**
+   - S3 bucket encryption with KMS
+   - Configurable bucket policies and access controls
+   - Support for private subnets and internal load balancers
+
+4. **Deployment Security**
+   - Blue/Green deployment strategy for zero-downtime updates
+   - Health checks and rollback capabilities
+   - Configurable deployment timeouts and termination policies
+
+## Best Practices
+
+1. **Resource Naming**
+   - Use consistent naming conventions
+   - Include environment and purpose in resource names
+   - Follow AWS resource naming best practices
+
+2. **Cost Optimization**
+   - Use Fargate Spot for non-critical workloads
+   - Configure service scheduling for non-production environments
+   - Implement appropriate auto-scaling policies
+
+3. **Monitoring and Logging**
+   - Enable CloudWatch logging for containers
+   - Configure appropriate log retention periods
+   - Set up alarms for critical metrics
+
+4. **Deployment Strategy**
+   - Use blue/green deployments for zero-downtime updates
+   - Configure appropriate health check parameters
+   - Implement proper rollback procedures
 
 ## Contributing
 

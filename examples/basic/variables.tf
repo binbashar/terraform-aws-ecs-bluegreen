@@ -73,3 +73,41 @@ variable "turn_off_on_services_schedule" {
     schedule_on_expression  = "cron(0 0 ? * MON,TUE,WED,THUR,FRI *)"
   }
 }
+
+variable "ecs_cluster_settings" {
+  type = object({
+    name = string
+    fargate_capacity_providers = object({
+      FARGATE = object({
+        default_capacity_provider_strategy = object({
+          weight = number
+          base   = number
+        })
+      })
+      FARGATE_SPOT = object({
+        default_capacity_provider_strategy = object({
+          weight = number
+          base   = number
+        })
+      })
+    })
+  })
+  description = "ECS Cluster Settings"
+  default = {
+    name = "ecs-cluster"
+    fargate_capacity_providers = {
+      FARGATE = {
+        default_capacity_provider_strategy = {
+          weight = 60
+          base   = 1
+        }
+      }
+      FARGATE_SPOT = {
+        default_capacity_provider_strategy = {
+          weight = 40
+          base   = 0
+        }
+      }
+    }
+  }
+}

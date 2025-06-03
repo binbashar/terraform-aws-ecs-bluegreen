@@ -6,7 +6,7 @@ module "security_group" {
   source      = "github.com/binbashar/terraform-aws-security-group?ref=v5.3.0"
   name        = var.security_settings.security_group_name
   description = var.security_settings.description
-  vpc_id      = data.aws_vpc.vpc.id
+  vpc_id      = var.networking_settings.vpc_id
 
   # Default CIDR Blocks
   ingress_cidr_blocks = [data.aws_vpc.vpc.cidr_block]
@@ -37,7 +37,7 @@ module "ecs_services" {
   # Network Configuration
   create_security_group = false
   security_group_ids    = [module.security_group.security_group_id]
-  subnet_ids            = var.networking_settings.private_subnets
+  subnet_ids            = var.networking_settings.service_subnets
   load_balancer = {
     service = {
       target_group_arn = var.alb_settings.target_group_blue_arn
@@ -64,4 +64,3 @@ module "ecs_services" {
   service_tags = each.value.tags
   tags         = each.value.tags
 }
-

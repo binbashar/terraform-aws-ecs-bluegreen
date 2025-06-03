@@ -81,6 +81,6 @@ data "aws_iam_policy_document" "scheduler_role_policy" {
       "ecs:DescribeServices"
     ]
 
-    resources = ["arn:aws:ecs:${var.region}:${data.aws_caller_identity.current.account_id}:service/${var.cluster_name}/${each.key}"]
+    resources = ["arn:aws:ecs:${var.region}:${data.aws_caller_identity.current.account_id}:service/${module.ecs_cluster.cluster_name}/${each.key}"]
   }
 }
