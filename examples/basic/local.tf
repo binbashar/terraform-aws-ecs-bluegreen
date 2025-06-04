@@ -1,7 +1,18 @@
+data "aws_caller_identity" "current" {}
+
 locals {
+  environment = replace("dev", "apps-", "")
+  name        = "apps-${local.environment}"
+
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+
+  # Get Network Configuration
   networking_settings = {
-    vpc_id = "vpc-0577524a0e38786ea"
-    alb_subnets = ["subnet-0577524a0e38786ea", "subnet-0577524a0e38786ea", "subnet-0577524a0e38786ea"]
-    service_subnets = ["subnet-0577524a0e38786ea", "subnet-0577524a0e38786ea", "subnet-0577524a0e38786ea"]
+    vpc_id          = data.terraform_remote_state.vpc.outputs.vpc_id
+    alb_subnets     = data.terraform_remote_state.vpc.outputs.private_subnets
+    service_subnets = data.terraform_remote_state.vpc.outputs.private_subnets
   }
 }
