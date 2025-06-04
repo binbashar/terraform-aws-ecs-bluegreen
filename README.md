@@ -5,16 +5,81 @@ This Terraform module provides a complete solution for deploying and managing EC
 ## Features
 
 - ECS Cluster and Service Management
+  - Fargate and Fargate Spot support
+  - Configurable capacity providers
+  - Service auto-scaling
+  - Task definition management
+  - Container health monitoring
+
 - Application Load Balancer (ALB) Configuration
+  - Internal and external load balancers
+  - HTTP/HTTPS listeners
+  - Custom security groups
+  - Health check configuration
+  - Target group management
+
 - Blue/Green Deployment Support
+  - Zero-downtime deployments
+  - Traffic shifting control
+  - Automatic rollback
+  - Deployment monitoring
+  - Custom deployment configurations
+
 - Auto Scaling Configuration
+  - Target tracking policies
+  - Scheduled scaling
+  - Metric-based scaling
+  - Cooldown periods
+  - Multiple scaling dimensions
+
 - IAM Role and Policy Management
+  - Task execution roles
+  - Service roles
+  - Least privilege access
+  - KMS integration
+  - Cross-account access
+
 - CloudWatch Alarms and Logging
+  - Container logs
+  - Service metrics
+  - Custom alarms
+  - Log retention policies
+  - Metric filters
+
 - CodeDeploy Integration
+  - Blue/Green deployments
+  - Traffic routing
+  - Deployment configurations
+  - Rollback capabilities
+  - Deployment monitoring
+
 - S3 Bucket for CodePipeline
+  - Versioning enabled
+  - KMS encryption
+  - Lifecycle policies
+  - Access logging
+  - Public access blocking
+
 - SNS Notifications
+  - Deployment notifications
+  - Custom topics
+  - Cross-region support
+  - Message filtering
+  - Delivery policies
+
 - Service Scheduling (Auto Start/Stop)
+  - Time-based scheduling
+  - Custom schedules
+  - Cost optimization
+  - Environment-specific settings
+  - Schedule notifications
+
 - Git Service Integration for CodePipeline
+  - GitHub support
+  - Branch management
+  - Webhook integration
+  - Connection management
+  - Repository access control
 
 ## Quick Start
 
@@ -157,6 +222,11 @@ services = {
         resources = ["*"]
       }
     ]
+
+    git_repository = {
+      name   = "my-org/my-repo"
+      branch = "main"
+    }
   }
 }
 ```
@@ -200,7 +270,7 @@ deployment_settings = {
   prod_traffic_route_listener_name = "http"
 
   bucket = {
-    name                    = "flokzu-codepipeline"
+    name                    = "apps-codepipeline"
     force_destroy           = false
     attach_policy           = false
     block_public_acls       = true
@@ -366,21 +436,43 @@ Check the `examples/basic` directory for a complete working example of how to us
    - Use consistent naming conventions
    - Include environment and purpose in resource names
    - Follow AWS resource naming best practices
+   - Use meaningful prefixes and suffixes
+   - Implement proper tagging strategy
 
 2. **Cost Optimization**
    - Use Fargate Spot for non-critical workloads
    - Configure service scheduling for non-production environments
    - Implement appropriate auto-scaling policies
+   - Monitor resource utilization
+   - Use appropriate instance sizes
 
 3. **Monitoring and Logging**
    - Enable CloudWatch logging for containers
    - Configure appropriate log retention periods
    - Set up alarms for critical metrics
+   - Implement centralized logging
+   - Use metric filters for log analysis
 
 4. **Deployment Strategy**
    - Use blue/green deployments for zero-downtime updates
    - Configure appropriate health check parameters
    - Implement proper rollback procedures
+   - Use canary deployments for critical services
+   - Monitor deployment metrics
+
+5. **Security**
+   - Implement least privilege access
+   - Use private subnets for services
+   - Enable encryption at rest and in transit
+   - Regular security audits
+   - Implement proper network segmentation
+
+6. **High Availability**
+   - Deploy across multiple AZs
+   - Use appropriate health checks
+   - Implement proper auto-scaling
+   - Use managed services where possible
+   - Regular backup and recovery testing
 
 ## Contributing
 
